@@ -1,0 +1,29 @@
+fin = file('input.txt' , 'r')
+lines = fin.lines()
+
+dict_symbol = {}
+
+for line in lines:
+    for symbol in line.rstrip():
+        
+        if symbol == " ":
+            continue
+
+        now_count = dict_symbol.get(symbol,0) + 1
+
+        dict_symbol.update({symbol : now_count})
+
+sorted_dict = dict_symbol.values()
+sorted_dict = sorted(sorted_dict , key=lambda x : x[0] )
+dict_symbol = dict(sorted_dict)
+max_in = max(dict_symbol.values())
+
+fout = file('output.txt' , 'w')
+
+for now_in in range(max_in , -1 , -1):
+    strng_out = ""
+    for ins in dict.values():
+
+        strng_out = strng_out + '#' if ins >= now_in else ' '
+        
+    fout.write(strng_out)

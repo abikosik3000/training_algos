@@ -1,0 +1,20 @@
+fin = open('input.txt' , 'r')
+fout = open('output.txt' , 'w')
+
+k = int(fin.readline().rstrip() )
+
+now_point = tuple( int(x) for x in fin.readline().rstrip().split(" ")) 
+min_y = now_point[1]
+max_y = now_point[1]
+min_x = now_point[0]
+max_x = now_point[0]
+for i in range(k - 1):
+    now_point =  tuple( int(x) for x in fin.readline().rstrip().split(" ")) 
+    min_y = min( now_point[1] , min_y)
+    max_y = max( now_point[1] , max_y)
+    min_x = min( now_point[0] , min_x)
+    max_x = max( now_point[0] , max_x)
+
+fout.write(str(min_x) + " " + str(min_y) + " " + str(max_x) + " " + str(max_y))
+fin.close()
+fout.close()
