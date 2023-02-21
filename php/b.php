@@ -59,7 +59,10 @@ foreach( $chars as $search_char){
     }
 }
 
+
 fputs($fout, $max_now_combo);
+
+
 
 fclose( $fout);
 fclose( $fin);
