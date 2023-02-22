@@ -1,3 +1,3 @@
 <?php
 
-echo "test";
+echo (int)is_numeric("!");
