@@ -1,1 +1,3 @@
-2
+calculate -(-4 - 2) 
+rezult 6 
+approve 6 
