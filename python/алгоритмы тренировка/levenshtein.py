@@ -11,25 +11,22 @@ fout = open('output.txt', 'w')
 
 s1 = fin.readline().rstrip()
 s2 = fin.readline().rstrip()
-m = len(s1)
-n = len(s2)
+m = len(s1) + 1
+n = len(s2) + 1
 
+matr = [  [0] * m  for i in range(n)]
 
-matr = [  [0] * m for i in range(n)]
+for j in range(m ):
+    matr[0][j] = j
 
-for i in range(n):
-    for j in range(m):
-        if(s1[j] == s2[i]):
-            matr[i][j] += min( 
-                get_from_matr(matr,i - 1, j - 1) ,
-                get_from_matr(matr,i - 1, j) ,
-                get_from_matr(matr,i, j - 1)   )
-        else:
-            matr[i][j] += 1 + min( 
-                get_from_matr(matr,i - 1, j - 1) ,
-                get_from_matr(matr,i - 1, j) ,
-                get_from_matr(matr,i, j - 1)   )
+for i in range(n ):
+    matr[i][0] = i
 
+for i in range(1,n):
+    for j in range(1,m):
+        matr[i][j] = min( matr[i - 1][j - 1] + int(s1[j - 1] != s2[i - 1]), 
+                          matr[i - 1][j] + 1, 
+                          matr[i][j - 1] + 1)
 
 #for i in range(n):
 #    print(matr[i])
