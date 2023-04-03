@@ -24,7 +24,7 @@ function chek_skobe_balans($in_s)
 
 function chek_correct_infix($infiks_w)
 {
-    //global $operations;
+    //два числа подряд
     if(count( $infiks_w ) == 0){
         return true;
     }
@@ -43,6 +43,13 @@ function chek_correct_infix($infiks_w)
     return true;
 }
 
+function print_arr($a){
+    echo "\n";
+    foreach($a as $el){
+        echo "$el ";
+    }
+    echo "\n";
+}
 
 function calc_to_array($in_s , &$infiks_w){
 
@@ -75,10 +82,15 @@ function calc_to_array($in_s , &$infiks_w){
     }
 }
 
-
 $operations = [
     "~" => new Operation(10, fn($x_arr) => 0 - $x_arr[0] ,1),
-    "/" => new Operation(3, fn($x_arr) => $x_arr[1] / $x_arr[0] ),
+    "/" => new Operation(3, function($x_arr) {
+        if($x_arr[0] == 0){
+            throw new Exception("Деление на ноль", 1);
+        }  
+        return $x_arr[1] / $x_arr[0];
+    }
+),
     "*" => new Operation(3, fn($x_arr) => $x_arr[1] * $x_arr[0] ),
     "+" => new Operation(2, fn($x_arr) => $x_arr[1] + $x_arr[0] ),
     "-" => new Operation(2, fn($x_arr) => $x_arr[1] - $x_arr[0] ),
@@ -143,48 +155,55 @@ function calc_postfix($postfix_w){
             $operands = array();
             for($i = 0;$i < $operations[$now_char]->need_vars ; $i++){
                 if(count($stak) == 0){
-                    return "WRONG";
+                    throw new Exception("Ошибка представления", 1);
                 }
                 $operands[] = array_pop($stak);
             }
             $stak[] = ($operations[$now_char]->make_operation)($operands);
         }
-        //var_dump($stak);
     }
     
-
     if(sizeof($stak) == 1){
         return $stak[0];
     }
     else{
-        return "WRONG";
+        throw new Exception("Ошибка представления", 1);
     }
-}
-
-function print_arr($a){
-    echo "\n";
-    foreach($a as $el){
-        echo "$el ";
-    }
-    echo "\n";
 }
 
 $fin = fopen( 'input.txt', 'r' );
 $fout = fopen('output.txt' , 'w');
 
-
 $in_s = trim(fgets($fin));
-
 $replace = [];
-$s = '';
-while(true){
 
-    $in = fgets($fin);
-    if($in === false){
-        break;
+//$stdin = fopen('php://stdin', 'r');
+echo "переменые из файла?[Y/n]\n";
+$from_file = trim(fgets(STDIN));
+
+if($from_file == "n"){
+    for($i = 0; $i < strlen($in_s) ; $i++){
+        if(preg_match('/[a-z]/' , $in_s[$i])){
+            if(isset($replace[$in_s[$i]]  ) === false){
+                $number = 0;
+                echo "{$in_s[$i]} =\n";
+                $number = trim(fgets(STDIN));
+                $replace[$in_s[$i]] = $number;
+            }
+        }
     }
-    $in = explode(" ",trim($in) );
-    $replace[$in[0]] = $in[1];
+}
+else{
+    while(true){
+    
+        $in = fgets($fin);
+        
+        if($in === false){
+            break;
+        }
+        $in = explode(" ",trim($in) );
+        $replace[$in[0]] = $in[1];
+    }
 }
 
 function podstanovka(&$s , $repl){
@@ -198,7 +217,6 @@ function approve($stroka){
     return $rezultat;
 }
 
-
 $infiks_w = array();
 $postfix_w = array();
 if( chek_skobe_balans($in_s) ){
@@ -209,28 +227,24 @@ if( chek_skobe_balans($in_s) ){
     if(chek_correct_infix($infiks_w)){
         
         infiks_to_postfix($infiks_w , $postfix_w);
-        $rez_calc = calc_postfix($postfix_w);
-        
-        if($rez_calc != "WRONG"){
-            
-            fputs($fout,"calculate $in_s \n");
-            fputs($fout,"rezult $rez_calc \n");
+        try{
+            $rez_calc = calc_postfix($postfix_w);
+            fputs($fout,"выражение $in_s \n");
+            fputs($fout,"результат $rez_calc \n");
             $rez_approve = approve($in_s);
-            fputs($fout,"approve $rez_approve \n");
+            fputs($fout,"проверка $rez_approve \n");
         }
-        else{
-            fputs($fout,"WRONG");
+        catch(Exception $e){
+            echo 'Выброшено исключение: ',  $e->getMessage(), "\n";
         }
     }
     else{
-        fputs($fout,"WRONG");
+        fputs($fout,"Несколько переменных подряд");
     }
 }
 else{
-    fputs($fout,"WRONG");
+    fputs($fout,"Ошибка скобочной последовательности");
 }
-
-
 
 fclose( $fout);
 fclose( $fin);
