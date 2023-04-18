@@ -225,7 +225,7 @@ if( chek_skobe_balans($in_s) ){
     calc_to_array($in_s , $infiks_w);
 
     if(chek_correct_infix($infiks_w)){
-        
+         
         infiks_to_postfix($infiks_w , $postfix_w);
         try{
             $rez_calc = calc_postfix($postfix_w);
