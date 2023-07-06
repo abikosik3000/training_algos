@@ -1,4 +1,18 @@
-x = 0
-while x < 10:
-    x = x + 1
-print(x)
+import enum
+
+
+class CommonItem:
+    pass
+
+class ReceiptItem:
+    pass
+
+class SpecialItem:
+    pass
+
+class Status(enum.Enum):
+    special = "a"
+    receipt = "b"
+    common = "c"
+
+print(Status("d")) 
